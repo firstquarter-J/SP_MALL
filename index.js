@@ -5,66 +5,22 @@ const port = 3000
 const connect = require('./schemas')
 connect()
 
-// 라우터 변수화?
-const goodsRouter = require('./routes/goods')
-const userRouter = require('./routes/user')
-
-// const mongoose = require('mongoose'); //  몽고디비
-
-// app.get('/mongodb', async (req, res) => {
-//     await mongoose.connect('mongodb://localhost/voyage', { // 어웨이트? 프로미슨가? // 몽고디비 주소? mongodb://localhost/voyage db 경로? 이름?
-//         useNewUrlParser: true,
-//         useUnifiedTopology: true,
-//         useFindAndModify: true,
-//         useCreateIndex: true // 옵션들?
-//     });
-
-//     const { Schema } = mongoose;
-//     const goodsSchema = new Schema({
-//       goodsId: {
-//         type: Number,
-//         required: true,
-//         unique: true,
-//       },
-//       name: {
-//         type: String,
-//         required: true,
-//         unique: true,
-//       },
-//       thumbnailUrl: {
-//         type: String,
-//       },
-//       category: {
-//         type: String,
-//       },
-//       price: {
-//         type: Number,
-//       }
-//     })
-
-//     let Goods = mongoose.model("Goods", goodsSchema)
-
-    await Goods.create({
-      goodsId: 1,
-      name: "맛있는 저녁",
-      thumbnailUrl: "https://upload.wikimedia.org/wikipedia/commons/e/e7/2020-10-20_%EC%9C%A1%ED%9A%8C.jpeg",
-      category: "food",
-      price: 15000,
-    })
-
-		res.send('ok'); // /mongodb 페이지로 접속 시 화면에 ok 출력되네?
-})
-
-// 미들웨어
-app.use(express.urlencoded({extended: false}))
+app.use(express.urlencoded({ extended: false })) // 동기? 비동기? 순서가 중요하네? goodsRouter 보다 아래 있으니 에러!
 app.use(express.json())
 app.use(express.static('public')) // static 미들웨어 이용 public 폴더
 
-app.use('/goods', goodsRouter)
-app.use('/user', userRouter)
+// 라우터 변수화?
+// const goodsRouter = require('./routes/goods')
+// const userRouter = require('./routes/user')
+// app.use('/goods', goodsRouter)
+// app.use('/user', userRouter)
+
+const goodsRouter = require("./routers/goods"); // 위에랑 뭐가 다른건데???
+app.use("/api", [goodsRouter]);
+
 
 app.use((req, res, next) => {
-  console.log(req);
+  // console.log(req);
   next();
 });
 
@@ -85,6 +41,14 @@ app.get('/detail', (req, res) => {
   res.render('detail')
 })
 
+app.get('/cart', (req, res) => {
+  res.render('cart')
+})
+
+app.get('/order', (req, res) => {
+  res.render('order')
+})
+
 app.get('/', (req, res) => {
   res.send('<!DOCTYPE html>\
   <html lang="en">\
@@ -100,22 +64,6 @@ app.get('/', (req, res) => {
   </body>\
   </html>')
 })
-
-// app.get('/goods/list', (req, res) => {
-//     res.send('상품 목록 페이지')
-//   })
-  
-//   app.get('/goods/detail', (req, res) => {
-//     res.send('상품 상세 페이지')
-//   })
-  
-//   app.get('/user/login', (req, res) => {
-//     res.send('로그인 페이지')
-//   })
-  
-//   app.get('/user/register', (req, res) => {
-//     res.send('회원가입 페이지')
-//   })
 
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`)
